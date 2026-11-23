@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cómo usar un analizador de gases portátil</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #101a2b;
+      --panel: #18263a;
+      --panel-2: #253750;
+      --text: #f3f6fb;
+      --muted: #9eafc4;
+      --teal: #19b5a5;
+      --amber: #ffb84d;
+      --red: #ff7777;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 28px 18px;
+      background: radial-gradient(ellipse at 50% 0, #1a2c46, var(--bg) 70%);
+      color: var(--text);
+      font: 16px/1.5 "Segoe UI", Arial, sans-serif;
+    }
+    main { width: min(1050px, 100%); margin: 0 auto; }
+    header { display: flex; justify-content: space-between; gap: 20px; align-items: end; }
+    .eyebrow { color: var(--teal); font-size: .78rem; font-weight: 800; letter-spacing: .14em; }
+    h1 { margin: 5px 0 15px; font-size: clamp(1.45rem, 3vw, 2rem); line-height: 1.2; }
+    .step-count { color: var(--muted); font-size: .9rem; font-weight: 700; white-space: nowrap; }
+    .progress { height: 7px; margin-bottom: 18px; overflow: hidden; border-radius: 8px; background: var(--panel-2); }
+    #progress-fill { width: 16.666%; height: 100%; background: var(--teal); transition: width .3s ease; }
+    .layout { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(260px, .8fr); gap: 16px; }
+    .scene, .instructions { min-width: 0; border: 1px solid #2b3d56; border-radius: 14px; background: var(--panel); }
+    .scene { padding: 10px; }
+    svg { display: block; width: 100%; height: auto; }
+    .instructions { padding: 22px; }
+    .label { margin: 0 0 7px; color: var(--teal); font-size: .76rem; font-weight: 800; letter-spacing: .1em; }
+    #instruction { min-height: 92px; margin: 0; font-size: 1.05rem; }
+    .divider { height: 1px; margin: 20px 0; background: #2b3d56; }
+    .safety-label { color: var(--amber); }
+    #safety { margin: 0; color: #e1e8f0; }
+    #example {
+      display: none;
+      margin-top: 20px;
+      padding: 12px;
+      border: 1px solid var(--amber);
+      border-radius: 8px;
+      background: var(--panel-2);
+      color: #ffcf70;
+      font-size: .85rem;
+    }
+    .controls { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 18px 0; }
+    button {
+      min-width: 112px;
+      padding: 10px 16px;
+      border: 0;
+      border-radius: 7px;
+      background: var(--panel-2);
+      color: var(--text);
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    button:hover { filter: brightness(1.2); }
+    button:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+    #play { background: var(--teal); color: #071821; }
+    footer { color: #8192a8; font-size: .83rem; }
+    .car { fill: url(#body-paint); stroke: #62c4d2; stroke-width: 3; }
+    .glass { fill: #b9e5e9; stroke: #d8f4f4; stroke-width: 2; }
+    .wheel { fill: #101a2b; stroke: #9eafc4; stroke-width: 4; }
+    .rim { fill: #53647a; stroke: #d2dbe6; stroke-width: 2; }
+    #hose-shadow { fill: none; stroke: #171f2d; stroke-width: 7; stroke-linecap: round; }
+    #hose { fill: none; stroke: #45bdb1; stroke-width: 3; stroke-linecap: round; }
+    #probe { transition: transform .08s linear; }
+    #warm-bar { transition: width .08s linear; }
+    .screen { fill: #071821; stroke: var(--teal); stroke-width: 2; }
+    @media (max-width: 760px) {
+      body { padding: 20px 12px; }
+      .layout { grid-template-columns: 1fr; }
+      .instructions { padding: 18px; }
+      #instruction { min-height: 0; }
+      header { align-items: start; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <div class="eyebrow">GUÍA ANIMADA</div>
+        <h1 id="title">1. Revisa el equipo</h1>
+      </div>
+      <div class="step-count" id="step-count">PASO 1 DE 6</div>
+    </header>
+    <div class="progress" aria-label="Progreso de la animación"><div id="progress-fill"></div></div>
+
+    <section class="layout" aria-live="polite">
+      <div class="scene">
+        <svg viewBox="0 0 700 430" role="img" aria-label="Vehículo conectado a un analizador portátil de gases">
+          <rect x="1" y="1" width="698" height="428" rx="10" fill="#18263a"/>
+          <rect x="1" y="300" width="698" height="129" fill="#202f43"/>
+          <path d="M15 300H685" stroke="#53647a" stroke-width="2"/>
+          <path d="M40 405h36m30 0h36m30 0h36m30 0h36m30 0h36m30 0h36m30 0h36m30 0h36m30 0h36"
+                stroke="#53647a" stroke-width="3"/>
+          <g id="ventilation" display="none">
+            <rect x="18" y="14" width="664" height="43" rx="8" fill="#3c2b1d" stroke="#ffb84d" stroke-width="2"/>
+            <text x="350" y="41" fill="#ffcf70" text-anchor="middle" font-size="13" font-weight="700">
+              ÁREA BIEN VENTILADA · NUNCA EN UN RECINTO CERRADO
+            </text>
+          </g>
+          <defs>
+            <linearGradient id="body-paint" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#43a8b7"/>
+              <stop offset=".48" stop-color="#287c91"/>
+              <stop offset="1" stop-color="#19556b"/>
+            </linearGradient>
+            <linearGradient id="window-glass" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#e0f7f5"/>
+              <stop offset="1" stop-color="#7eb8c5"/>
+            </linearGradient>
+          </defs>
+          <path class="car" d="M151 260l4-22q2-9 13-15l37-20 50-42q10-9 25-9h113q16 0 29 10l54 40 77 20q16 4 25 17l13 17q4 5 4 13v13q0 8-8 8H157q-6 0-6-7z"/>
+          <path d="M215 202l42-35q11-10 26-10h112q15 0 26 9l45 35z" fill="#147084" opacity=".65"/>
+          <path class="glass" fill="url(#window-glass)" d="M228 184l34-29q9-8 22-8h42v40z"/>
+          <path class="glass" fill="url(#window-glass)" d="M337 147h57q11 0 20 7l39 30H337z"/>
+          <path d="M337 146v42m-2-2h-109m111 0h110" fill="none" stroke="#176071" stroke-width="4"/>
+          <path d="M270 151l-16 31m143-32 25 32" fill="none" stroke="#fff" stroke-width="3" opacity=".32"/>
+          <path d="M215 203l-11 60m136-76v77m111-60 12 60" fill="none" stroke="#145b6c" stroke-width="2" opacity=".8"/>
+          <path d="M347 207v20q0 5 5 5h20q5 0 5-5v-20m-30 4h29" fill="none" stroke="#145b6c" stroke-width="2"/>
+          <path d="M390 218h20q4 0 4 4t-4 4h-20z" fill="#a9e3df" stroke="#145b6c" stroke-width="1.5"/>
+          <path d="M252 218h20q4 0 4 4t-4 4h-20z" fill="#a9e3df" stroke="#145b6c" stroke-width="1.5"/>
+          <path d="M178 239h34m148 45h69m-161 0h42" fill="none" stroke="#a9d8d9" stroke-width="2" opacity=".48"/>
+          <path d="M190 210l-11-3-7 7 15 4z" fill="#267b8a" stroke="#bce9e8" stroke-width="2"/>
+          <path d="M578 218l20 7 7 9-27-4z" fill="#eaf7d2" stroke="#ffcf70" stroke-width="2"/>
+          <path d="M602 250h-18m17 6h-15" stroke="#16465a" stroke-width="3" stroke-linecap="round"/>
+          <path d="M155 234h14v16h-15z" fill="#ff7777" stroke="#ffd1b3" stroke-width="1.5"/>
+          <path d="M152 269h-34" stroke="#bdc9d8" stroke-width="8"/>
+          <path d="M152 265h-28" stroke="#f3f6fb" stroke-width="2"/>
+          <path d="M186 263q4-39 44-39t44 39m187 0q4-39 44-39t44 39" fill="none" stroke="#16566b" stroke-width="3"/>
+          <circle class="wheel" cx="230" cy="275" r="29"/>
+          <circle class="rim" cx="230" cy="275" r="19"/>
+          <g stroke="#cbd6e4" stroke-width="3" stroke-linecap="round">
+            <path d="M230 259v32m-14-24 28 16m0-16-28 16m14-24v32"/>
+          </g>
+          <circle cx="230" cy="275" r="5" fill="#19b5a5" stroke="#d2dbe6" stroke-width="2"/>
+          <circle class="wheel" cx="505" cy="275" r="29"/>
+          <circle class="rim" cx="505" cy="275" r="19"/>
+          <g stroke="#cbd6e4" stroke-width="3" stroke-linecap="round">
+            <path d="M505 259v32m-14-24 28 16m0-16-28 16m14-24v32"/>
+          </g>
+          <circle cx="505" cy="275" r="5" fill="#19b5a5" stroke="#d2dbe6" stroke-width="2"/>
+          <text x="151" y="292" fill="#9eafc4" font-size="9" font-weight="700">ESCAPE</text>
+          <circle id="engine-light" cx="185" cy="227" r="6" fill="#ffb84d" visibility="hidden"/>
+          <text id="engine-label" x="350" y="333" fill="#9eafc4" text-anchor="middle" font-size="12" font-weight="700">
+            VEHÍCULO
+          </text>
+
+          <g id="analyzer" transform="translate(24 324)">
+            <rect width="145" height="91" rx="8" fill="#263951" stroke="#9eafc4" stroke-width="2"/>
+            <text x="72" y="12" fill="#cbd6e4" text-anchor="middle" font-size="8" font-weight="700">ANALIZADOR PORTÁTIL</text>
+            <rect class="screen" x="12" y="18" width="121" height="48" rx="4"/>
+            <text id="screen-status" x="72" y="48" fill="#8192a8" text-anchor="middle" font-family="monospace" font-size="13" font-weight="700">APAGADO</text>
+            <g id="readings" display="none" fill="#8de0d4" text-anchor="middle" font-family="monospace" font-size="9" font-weight="700">
+              <text x="72" y="39">CO 0.4% · HC 120 ppm</text>
+              <text x="72" y="55">O₂ 1.2% · CO₂ 14.0%</text>
+            </g>
+            <rect id="warm-bar-bg" x="24" y="39" width="97" height="7" rx="3" fill="#253750" display="none"/>
+            <rect id="warm-bar" x="24" y="39" width="0" height="7" rx="3" fill="#ffb84d" display="none"/>
+            <circle id="power-light" cx="123" cy="78" r="7" fill="#8192a8"/>
+            <text x="66" y="81" fill="#9eafc4" text-anchor="middle" font-size="8">POWER</text>
+          </g>
+          <path id="hose-shadow" d="M169 357 C220 386 260 377 315 365"/>
+          <path id="hose" d="M169 357 C220 386 260 377 315 365"/>
+          <g id="probe" transform="translate(315 365)">
+            <path d="M0 0l-20-5" stroke="#d2dbe6" stroke-width="6" stroke-linecap="round"/>
+            <circle cx="-21" cy="-5" r="4" fill="#ffb84d"/>
+          </g>
+          <text x="350" y="390" fill="#9eafc4" text-anchor="middle" font-size="10">SONDA Y MANGUERA</text>
+        </svg>
+      </div>
+
+      <aside class="instructions">
+        <p class="label">QUÉ HACER</p>
+        <p id="instruction">Comprueba que el analizador, la sonda y la manguera estén en buen estado.</p>
+        <div class="divider"></div>
+        <p class="label safety-label">SEGURIDAD</p>
+        <p id="safety">Conecta los accesorios indicados por el fabricante.</p>
+        <div id="example">Lecturas de ejemplo: no son límites de aprobación. Compara con la especificación aplicable al vehículo.</div>
+      </aside>
+    </section>
+
+    <nav class="controls" aria-label="Controles de animación">
+      <button id="play" type="button">Pausar</button>
+      <button id="next" type="button">Siguiente</button>
+      <button id="restart" type="button">Reiniciar</button>
+    </nav>
+    <footer>Uso educativo. Consulta los manuales del vehículo y del analizador. No realices pruebas en espacios cerrados.</footer>
+  </main>
+  <script>
+    (() => {
+      const stages = [
+        ["1. Revisa el equipo",
+          "Comprueba que el analizador, la sonda y la manguera estén en buen estado.",
+          "Conecta los accesorios indicados por el fabricante."],
+        ["2. Enciende y espera",
+          "Enciende el analizador y deja que complete su calentamiento y autocomprobación.",
+          "Sigue el tiempo y las indicaciones del manual del instrumento."],
+        ["3. Prepara el vehículo",
+          "Coloca el vehículo en un área bien ventilada y estabiliza el motor según el procedimiento.",
+          "Nunca hagas la prueba en un recinto cerrado: el escape contiene monóxido de carbono."],
+        ["4. Introduce la sonda",
+          "Con el motor en marcha, introduce la sonda en el tubo de escape como indica el fabricante.",
+          "Evita tocar el escape: puede estar muy caliente. Mantente fuera del flujo de gases."],
+        ["5. Mide y observa",
+          "Espera a que la lectura se estabilice y registra los gases que muestra el equipo.",
+          "Los valores de pantalla son ilustrativos. Interpreta el resultado según el vehículo y su manual."],
+        ["6. Retira y apaga",
+          "Retira la sonda con cuidado, deja el equipo en estado seguro y apágalo según su manual.",
+          "Deja enfriar la sonda antes de guardarla. No desconectes mangueras calientes."]
+      ];
+      const duration = 4500;
+      const $ = (id) => document.getElementById(id);
+      let index = 0;
+      let progress = 0;
+      let playing = true;
+      let startedAt = performance.now();
+
+      function render() {
+        const [title, instruction, safety] = stages[index];
+        $("title").textContent = title;
+        $("step-count").textContent = `PASO ${index + 1} DE ${stages.length}`;
+        $("instruction").textContent = instruction;
+        $("safety").textContent = safety;
+        $("progress-fill").style.width = `${((index + 1) / stages.length) * 100}%`;
+        $("ventilation").setAttribute("display", index === 2 ? "inline" : "none");
+        $("engine-light").setAttribute("visibility", index >= 2 && index <= 4 ? "visible" : "hidden");
+        $("engine-label").textContent = index >= 2 && index <= 4 ? "MOTOR EN MARCHA" : "VEHÍCULO";
+        $("engine-label").setAttribute("fill", index >= 2 && index <= 4 ? "#ffcf70" : "#9eafc4");
+        $("readings").setAttribute("display", index === 4 ? "inline" : "none");
+        $("example").style.display = index === 4 ? "block" : "none";
+        $("warm-bar-bg").setAttribute("display", index === 1 ? "inline" : "none");
+        $("warm-bar").setAttribute("display", index === 1 ? "inline" : "none");
+        $("screen-status").setAttribute("display", index === 4 ? "none" : "inline");
+        $("screen-status").textContent = index === 0 ? "APAGADO" : index === 1 ? "CALENTANDO..." : "LISTO";
+        $("screen-status").setAttribute("fill", index === 0 ? "#8192a8" : index === 1 ? "#ffcf70" : "#19b5a5");
+        $("power-light").setAttribute("fill", index === 0 ? "#8192a8" : index === 1 ? "#ffcf70" : "#19b5a5");
+        $("play").textContent = playing ? "Pausar" : index === stages.length - 1 ? "Reproducir" : "Continuar";
+        const inserted = index === 3 ? progress : index === 4 ? 1 : index === 5 ? progress : 0;
+        $("probe").setAttribute("transform", `translate(${315 - 170 * inserted} ${365 - 80 * inserted})`);
+        const x = 315 - 170 * inserted;
+        const y = 365 - 80 * inserted;
+        const path = `M169 357 C220 386 260 377 ${x} ${y}`;
+        $("hose").setAttribute("d", path);
+        $("hose-shadow").setAttribute("d", path);
+        $("warm-bar").setAttribute("width", `${97 * progress}`);
+      }
+
+      function advance() {
+        index = (index + 1) % stages.length;
+        progress = index === stages.length - 1 ? 1 : 0;
+        startedAt = performance.now();
+        render();
+      }
+      function frame(now) {
+        if (playing) {
+          const elapsed = now - startedAt;
+          if (elapsed >= duration) {
+            if (index < stages.length - 1) {
+              advance();
+            } else {
+              playing = false;
+              progress = 0;
+              render();
+            }
+          } else {
+            progress = index === 1 || index === 3
+              ? elapsed / duration
+              : index === 5 ? 1 - elapsed / duration : 0;
+            render();
+          }
+        }
+        requestAnimationFrame(frame);
+      }
+
+      $("play").addEventListener("click", () => {
+        if (index === stages.length - 1) {
+          index = 0;
+          progress = 0;
+          playing = true;
+          startedAt = performance.now();
+        } else if (playing) {
+          playing = false;
+          const elapsed = (performance.now() - startedAt) / duration;
+          if (index === 1 || index === 3) progress = Math.max(progress, elapsed);
+          if (index === 5) progress = Math.min(progress, 1 - elapsed);
+        } else {
+          playing = true;
+          startedAt = performance.now() - (index === 5 ? (1 - progress) : progress) * duration;
+        }
+        render();
+      });
+      $("next").addEventListener("click", advance);
+      $("restart").addEventListener("click", () => {
+        index = 0;
+        progress = 0;
+        playing = true;
+        startedAt = performance.now();
+        render();
+      });
+      render();
+      requestAnimationFrame(frame);
+    })();
+  </script>
+</body>
+</html>
